@@ -168,25 +168,36 @@ Once the application is running, access the interactive documentation at:
 ## 🧪 Tests and Code Quality
 
 ### 1. Install Dependencies
-Ensure you have installed all development dependencies inside your virtual environment:
-bash
-pip install pytest httpx ruff
 
+Ensure you have installed all development dependencies inside your virtual environment:
+
+```bash
+pip install pytest httpx ruff
+```
 
 ### 2. Running Tests
-To run the automated test suite, use the following command from the project root:
-bash
-PYTHONPATH=. pytest
 
+To run the automated test suite, use the following command from the project root:
+
+```bash
+PYTHONPATH=. pytest
+```
 
 ### 3. Code Linting and Formatting
-To check the code style guidelines (PEP 8) and format the files automatically using Ruff:
-bash
-# Check code rules
-ruff check .
 
-# Format code automatically
+To check code style guidelines (PEP 8) and format files automatically using Ruff:
+
+#### Check code rules
+
+```bash
+ruff check .
+```
+
+#### Format code automatically
+
+```bash
 ruff format .
+```
 
 ## Future Improvements
 
