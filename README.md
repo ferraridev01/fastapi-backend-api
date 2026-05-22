@@ -49,24 +49,65 @@ app/
 └── main.py
 ```
 
-## Installation & Setup
+## 🚀 How to Run the Project
+
+### 💻 Local Development
 
 ### 1. Environment Configuration
+
 Create a `.env` file in the root directory:
+
 ```env
 SECRET_KEY=your_super_secret_jwt_key_here
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=30
+DATABASE_URL=postgresql+psycopg2://postgres:password@localhost:5432/products_db
 ```
 
 ### 2. Setup Virtual Environment
+
 ```bash
 python -m venv .venv
 source .venv/bin/activate  # On Windows use: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### 3. Run Infrastructure (PostgreSQL)
+#### Option 1: Full Environment with Docker Compose (Recommended)
+
+This command starts both the FastAPI application and a local PostgreSQL database inside containers:
+
+```bash
+docker compose up --build
+```
+
+The API will be available at:
+
+```txt
+http://localhost:8000
+```
+
+#### Option 2: Running Application with Docker Run
+
+If you already have a PostgreSQL instance running locally on your machine:
+
+```bash
+docker build -t fastapi-app .
+
+docker run -p 8000:8000 \
+  --env DATABASE_URL=postgresql+psycopg2://postgres:password@localhost:5432/products_db \
+  fastapi-app
+```
+
+The API will be available at:
+
+```txt
+http://localhost:8000
+```
+
+#### Option 3: Manual PostgreSQL Container + Local Uvicorn
+
+If you want to run only PostgreSQL in Docker and run the API directly with Uvicorn:
+
 ```bash
 docker run --name products-db \
   -e POSTGRES_USER=postgres \
@@ -76,10 +117,26 @@ docker run --name products-db \
   -d postgres:16
 ```
 
-### 4. Run Application
+Then start the FastAPI application:
+
 ```bash
 uvicorn app.main:app --reload
 ```
+
+### ☁️ Production Deploy (Render)
+
+This project is configured for seamless deployment on Render.
+
+**Database**
+- Provision a managed PostgreSQL instance on Render.
+
+**Web Service**
+- Connect this GitHub repository.
+- Render will automatically detect the Dockerfile to build and deploy the container.
+
+**Environment Variables**
+- Inject the `DATABASE_URL` provided by Render into the Web Service settings.
+- Inject `SECRET_KEY`, `ALGORITHM`, and `ACCESS_TOKEN_EXPIRE_MINUTES` into the Web Service settings.
 
 ## API Documentation
 
