@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 from app.core.security import get_current_user
 from app.database.database import get_db
@@ -24,7 +24,8 @@ async def create_new_order(
 
 @router.get("/", response_model=list[OrderResponse])
 async def get_my_orders(
-    db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     return await get_user_orders(db, user_id=current_user.id)
 
@@ -36,12 +37,9 @@ async def change_order_status(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    updated_order = await update_order_status(
-        db, order_id=order_id, new_status=status_data.status, user_id=current_user.id
+    return await update_order_status(
+        db,
+        order_id=order_id,
+        new_status=status_data.status,
+        user_id=current_user.id,
     )
-    if not updated_order:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Order not found or access denied",
-        )
-    return updated_order

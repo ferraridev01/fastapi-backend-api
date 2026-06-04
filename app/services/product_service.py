@@ -1,7 +1,7 @@
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 from app.models.product_model import Product
-from app.schemas.product_schema import ProductCreate
+from app.schemas.product_schema import ProductCreate, ProductUpdate
 
 
 async def create_product(product: ProductCreate, db: Session) -> Product:
@@ -43,13 +43,14 @@ async def get_product_by_id(product_id: int, db: Session) -> Product:
 
 
 async def update_product(
-    product_id: int, product: ProductCreate, db: Session
+    product_id: int, product: ProductUpdate, db: Session
 ) -> Product:
     db_product = await get_product_by_id(product_id, db)
 
-    db_product.category = product.category
-    db_product.name = product.name
-    db_product.price = product.price
+    update_data = product.model_dump(exclude_unset=True)
+
+    for field, value in update_data.items():
+        setattr(db_product, field, value)
 
     db.commit()
     db.refresh(db_product)

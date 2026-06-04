@@ -1,7 +1,13 @@
 from fastapi import HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-from app.core.security import create_access_token, get_password_hash, verify_password
+from app.core.security import (
+    create_access_token,
+    create_refresh_token,
+    get_password_hash,
+    verify_password,
+    verify_refresh_token,
+)
 from app.models.user_model import User
 from app.schemas.user_schema import UserCreate
 
@@ -55,5 +61,31 @@ def login_user(db: Session, login_data: OAuth2PasswordRequestForm) -> dict[str, 
         )
 
     token_data = {"sub": db_user.username}
+
     access_token = create_access_token(data=token_data)
-    return {"access_token": access_token, "token_type": "bearer"}
+    refresh_token = create_refresh_token(data=token_data)
+
+    return {
+        "access_token": access_token,
+        "refresh_token": refresh_token,
+        "token_type": "bearer",
+    }
+
+
+def refresh_access_token(db: Session, refresh_token: str) -> dict[str, str]:
+    username = verify_refresh_token(refresh_token)
+
+    db_user = db.query(User).filter(User.username == username).first()
+    if not db_user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials"
+        )
+
+    token_data = {"sub": db_user.username}
+    access_token = create_access_token(data=token_data)
+
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+    }

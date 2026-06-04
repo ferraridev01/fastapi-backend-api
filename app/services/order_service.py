@@ -21,7 +21,9 @@ async def create_order(db: Session, order_data: OrderCreate, user_id: int) -> Or
 
     for item in order_data.items:
         db_item = OrderItem(
-            order_id=db_order.id, product_id=item.product_id, quantity=item.quantity
+            order_id=db_order.id,
+            product_id=item.product_id,
+            quantity=item.quantity,
         )
         db.add(db_item)
 
@@ -36,12 +38,18 @@ async def get_user_orders(db: Session, user_id: int) -> list[Order]:
 
 async def update_order_status(
     db: Session, order_id: int, new_status: str, user_id: int
-) -> Order | None:
+) -> Order:
     db_order = (
-        db.query(Order).filter(Order.id == order_id, Order.user_id == user_id).first()
+        db.query(Order)
+        .filter(Order.id == order_id, Order.user_id == user_id)
+        .first()
     )
+
     if not db_order:
-        return None
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Order with id {order_id} not found",
+        )
 
     db_order.status = new_status
     db.commit()

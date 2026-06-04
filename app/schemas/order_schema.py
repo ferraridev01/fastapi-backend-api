@@ -1,11 +1,14 @@
 from datetime import datetime
-from pydantic import BaseModel
+from typing import Literal
+
+from pydantic import BaseModel, Field
+
 from app.schemas.product_schema import ProductResponse
 
 
 class OrderItemCreate(BaseModel):
     product_id: int
-    quantity: int = 1
+    quantity: int = Field(1, ge=1)
 
 
 class OrderCreate(BaseModel):
@@ -33,4 +36,4 @@ class OrderResponse(BaseModel):
 
 
 class OrderStatusUpdate(BaseModel):
-    status: str
+    status: Literal["pending", "processing", "shipped", "delivered", "cancelled"]

@@ -1,29 +1,35 @@
 # Products and Orders API
 
-Professional REST API built with FastAPI, SQLAlchemy, and PostgreSQL, featuring secure JWT authentication and a robust ordering system.
+Professional REST API built with FastAPI, SQLAlchemy, and PostgreSQL,
+featuring JWT authentication, refresh tokens, role-based authorization,
+and a robust ordering system.
 
 ## Overview
 
 This project is a production-ready backend application focused on:
-- Layered FastAPI architecture (Routers, Services, Models, Schemas)
-- Advanced SQLAlchemy ORM relationships and data integrity
-- Secure user authentication and authorization using JWT
-- Dynamic filtering, pagination, and sorting
-- Containerized database infrastructure with Docker
+
+-   Layered FastAPI architecture (Routers, Services, Models, Schemas)
+-   Advanced SQLAlchemy ORM relationships and data integrity
+-   JWT Authentication with Access and Refresh Tokens
+-   Role-Based Authorization (Admin/User)
+-   Dynamic filtering, pagination, and sorting
+-   Request Logging Middleware
+-   Containerized infrastructure with Docker and Docker Compose
 
 ## Tech Stack
 
-- **Language:** Python
-- **Framework:** FastAPI
-- **ORM:** SQLAlchemy
-- **Database:** PostgreSQL
-- **Security:** Passlib (Bcrypt), Python-jose (JWT)
-- **Validation:** Pydantic v2
-- **Server:** Uvicorn
+-   **Language:** Python
+-   **Framework:** FastAPI
+-   **ORM:** SQLAlchemy
+-   **Database:** PostgreSQL
+-   **Security:** Passlib (Bcrypt), Python-jose (JWT)
+-   **Validation:** Pydantic v2
+-   **Server:** Uvicorn
+-   **Containers:** Docker, Docker Compose
 
 ## Project Structure
 
-```text
+``` text
 app/
 ├── core/
 │   ├── config.py
@@ -51,64 +57,41 @@ app/
 
 ## 🚀 How to Run the Project
 
-### 💻 Local Development
-
-### 1. Environment Configuration
+### Environment Configuration
 
 Create a `.env` file in the root directory:
 
-```env
+``` env
 SECRET_KEY=your_super_secret_jwt_key_here
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=30
+REFRESH_TOKEN_EXPIRE_DAYS=7
 DATABASE_URL=postgresql+psycopg2://postgres:password@localhost:5432/products_db
 ```
 
-### 2. Setup Virtual Environment
+### Setup Virtual Environment
 
-```bash
+``` bash
 python -m venv .venv
-source .venv/bin/activate  # On Windows use: .venv\Scripts\activate
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-#### Option 1: Full Environment with Docker Compose (Recommended)
+### Run with Docker Compose
 
-This command starts both the FastAPI application and a local PostgreSQL database inside containers:
-
-```bash
+``` bash
 docker compose up --build
 ```
 
-The API will be available at:
+API:
 
-```txt
+``` text
 http://localhost:8000
 ```
 
-#### Option 2: Running Application with Docker Run
+### Run PostgreSQL Container + Local Uvicorn
 
-If you already have a PostgreSQL instance running locally on your machine:
-
-```bash
-docker build -t fastapi-app .
-
-docker run -p 8000:8000 \
-  --env DATABASE_URL=postgresql+psycopg2://postgres:password@localhost:5432/products_db \
-  fastapi-app
-```
-
-The API will be available at:
-
-```txt
-http://localhost:8000
-```
-
-#### Option 3: Manual PostgreSQL Container + Local Uvicorn
-
-If you want to run only PostgreSQL in Docker and run the API directly with Uvicorn:
-
-```bash
+``` bash
 docker run --name products-db \
   -e POSTGRES_USER=postgres \
   -e POSTGRES_PASSWORD=password \
@@ -117,94 +100,140 @@ docker run --name products-db \
   -d postgres:16
 ```
 
-Then start the FastAPI application:
-
-```bash
+``` bash
 uvicorn app.main:app --reload
 ```
 
-### ☁️ Production Deploy (Render)
-
-This project is configured for seamless deployment on Render.
-
-**Database**
-- Provision a managed PostgreSQL instance on Render.
-
-**Web Service**
-- Connect this GitHub repository.
-- Render will automatically detect the Dockerfile to build and deploy the container.
-
-**Environment Variables**
-- Inject the `DATABASE_URL` provided by Render into the Web Service settings.
-- Inject `SECRET_KEY`, `ALGORITHM`, and `ACCESS_TOKEN_EXPIRE_MINUTES` into the Web Service settings.
-
 ## API Documentation
 
-Once the application is running, access the interactive documentation at:
-- **Swagger UI:** `http://localhost:8000/docs`
-- **ReDoc:** `http://localhost:8000/redoc`
+-   Swagger UI: `http://localhost:8000/docs`
+-   ReDoc: `http://localhost:8000/redoc`
 
-## Features & Endpoints
+## Features
 
-### Authentication (`/auth`)
-- `POST /auth/` - Register a new user
-- `POST /auth/login` - Authenticate user and receive JWT bearer token
+-   JWT Authentication
+-   Refresh Token Flow
+-   Role-Based Authorization (Admin/User)
+-   Protected Routes
+-   Request Logging Middleware
+-   Product Filtering
+-   Pagination
+-   Sorting
+-   Partial Updates with PATCH
+-   SQLAlchemy Relationships
+-   Dockerized Environment
 
-### Products (`/products`) - *Requires Authentication*
-- `POST /products/` - Create a new product
-- `GET /products/` - List products with optional queries:
-  - **Filter:** `?category=Hardware`
-  - **Pagination:** `?limit=10&skip=0`
-  - **Sorting:** `?order_by=price`
-- `GET /products/{product_id}` - Fetch a specific product by ID
-- `PUT /products/{product_id}` - Update product details
-- `DELETE /products/{product_id}` - Remove a product
+## Authentication Endpoints
 
-### Orders (`/orders`) - *Requires Authentication*
-- `POST /orders/` - Place a new order containing multiple items
-- `GET /orders/` - Retrieve orders belonging to the authenticated user
-- `PATCH /orders/{order_id}/status` - Update order progression status
+### `/auth`
 
-## 🧪 Tests and Code Quality
+-   `POST /auth/` - Register a new user
+-   `POST /auth/login` - Authenticate and receive access and refresh
+    tokens
+-   `POST /auth/refresh` - Generate a new access token using a valid
+    refresh token
 
-### 1. Install Dependencies
+## Product Endpoints
 
-Ensure you have installed all development dependencies inside your virtual environment:
+### `/products`
 
-```bash
-pip install pytest httpx ruff
+Authenticated Users:
+
+-   `GET /products/`
+-   `GET /products/{product_id}`
+
+Admin Only:
+
+-   `POST /products/`
+-   `PATCH /products/{product_id}`
+-   `DELETE /products/{product_id}`
+
+Available query parameters:
+
+-   `?category=Hardware`
+-   `?limit=10&skip=0`
+-   `?order_by=price`
+
+## Order Endpoints
+
+### `/orders`
+
+-   `POST /orders/` - Create an order
+-   `GET /orders/` - List authenticated user orders
+-   `PATCH /orders/{order_id}/status` - Update order status
+
+## Security & Authorization
+
+### Authentication
+
+The API uses JWT authentication with:
+
+-   Access Token
+-   Refresh Token
+
+Access tokens are used to access protected endpoints.
+
+Refresh tokens are used to obtain a new access token without requiring a
+new login.
+
+### Authorization
+
+The API implements role-based authorization.
+
+Roles:
+
+-   User
+-   Admin
+
+Permissions:
+
+  Endpoint                User   Admin
+  ----------------------- ------ -------
+  GET /products           ✓      ✓
+  GET /products/{id}      ✓      ✓
+  POST /products          ✗      ✓
+  PATCH /products/{id}    ✗      ✓
+  DELETE /products/{id}   ✗      ✓
+
+## Middleware
+
+A custom HTTP middleware logs:
+
+-   Request Method
+-   Request Path
+-   Response Status Code
+-   Request Execution Time
+
+Example:
+
+``` text
+GET /products 200 9.78ms
+POST /auth/login 200 206.59ms
 ```
 
-### 2. Running Tests
+## Tests and Code Quality
 
-To run the automated test suite, use the following command from the project root:
+### Run Tests
 
-```bash
+``` bash
 PYTHONPATH=. pytest
 ```
 
-### 3. Code Linting and Formatting
+### Ruff
 
-To check code style guidelines (PEP 8) and format files automatically using Ruff:
-
-#### Check code rules
-
-```bash
+``` bash
 ruff check .
-```
-
-#### Format code automatically
-
-```bash
 ruff format .
 ```
 
 ## Future Improvements
 
-- Implementation of database migrations using Alembic
-- Containerizing the entire application context using Docker Compose
-- Continuous Integration and Continuous Deployment (CI/CD) pipelines
+-   Alembic Database Migrations
+-   Redis Caching
+-   Background Tasks with Celery
+-   CI/CD Pipeline
+-   AWS Deployment
 
 ## Author
 
-**Yan Ferrari** - Backend & Automation Software Engineer Specialist.
+**Yan Ferrari** - Python Backend Developer

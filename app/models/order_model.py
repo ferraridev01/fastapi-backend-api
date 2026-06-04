@@ -27,7 +27,7 @@ class Order(Base):
     user_id = Column(
         Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
-    status = Column(String, default="pending", nullable=False)
+    status = Column(String(20), default="pending", nullable=False)
     created_at = Column(
         DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
     )
