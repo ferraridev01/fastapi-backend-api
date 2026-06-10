@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.schemas.product_schema import ProductResponse
 
@@ -20,8 +20,7 @@ class OrderItemResponse(BaseModel):
     quantity: int
     product: ProductResponse
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class OrderResponse(BaseModel):
@@ -31,9 +30,14 @@ class OrderResponse(BaseModel):
     created_at: datetime
     items: list[OrderItemResponse]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class OrderStatusUpdate(BaseModel):
-    status: Literal["pending", "processing", "shipped", "delivered", "cancelled"]
+    status: Literal[
+        "pending",
+        "processing",
+        "shipped",
+        "delivered",
+        "cancelled",
+    ]

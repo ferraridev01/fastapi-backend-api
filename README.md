@@ -213,15 +213,53 @@ POST /auth/login 200 206.59ms
 
 ## Tests and Code Quality
 
+The project includes automated API tests using PyTest and FastAPI TestClient.
+
+### Test Structure
+
+```text
+tests/
+├── conftest.py
+├── test_auth.py
+├── test_products.py
+└── test_orders.py
+```
+
+### Covered Scenarios
+
+- User Registration
+- User Authentication (JWT)
+- Product Creation
+- Product Retrieval
+- Product Update
+- Authentication and Authorization Validation
+- Order Creation
+- Order Listing
+- Order Status Update
+- Error Handling (401, 403, 404, 422)
+
 ### Run Tests
 
-``` bash
+```bash
 PYTHONPATH=. pytest
+```
+
+### Coverage Report
+
+```bash
+PYTHONPATH=. pytest --cov=app --cov-report=term-missing
+```
+
+Current coverage:
+
+```text
+Coverage: 87%
+Tests: 17 passing
 ```
 
 ### Ruff
 
-``` bash
+```bash
 ruff check .
 ruff format .
 ```

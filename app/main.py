@@ -5,7 +5,6 @@ from app.routers.order_router import router as order_router
 from app.routers.product_router import router as product_router
 from time import perf_counter
 
-Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="E-Commerce API", version="1.0.0")
 
