@@ -1,9 +1,10 @@
+from time import perf_counter
+
 from fastapi import FastAPI, Request
-from app.database.database import Base, engine
+
 from app.routers.auth_router import router as auth_router
 from app.routers.order_router import router as order_router
 from app.routers.product_router import router as product_router
-from time import perf_counter
 
 
 app = FastAPI(title="E-Commerce API", version="1.0.0")
