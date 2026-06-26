@@ -28,6 +28,7 @@ This project is a production-ready backend application focused on:
 -   **Validation:** Pydantic v2
 -   **Server:** Uvicorn
 -   **Containers:** Docker, Docker Compose
+- **CI/CD:** GitHub Actions
 
 ## Project Structure
 
@@ -214,8 +215,14 @@ POST /auth/login 200 206.59ms
 ```
 
 ## Tests and Code Quality
+This project includes automated API tests using PyTest and FastAPI TestClient.
 
-The project includes automated API tests using PyTest and FastAPI TestClient.
+Every push and pull request is automatically validated by GitHub Actions through the following pipeline:
+
+- PyTest
+- Ruff
+- Black
+- Docker image build validation
 
 ### Test Structure
 
@@ -255,8 +262,8 @@ PYTHONPATH=. pytest --cov=app --cov-report=term-missing
 Current coverage:
 
 ```text
-Coverage: 87%
-Tests: 17 passing
+Coverage: 88%
+Tests: 20 passing
 ```
 
 ### Ruff
@@ -271,7 +278,6 @@ ruff format .
 -   Alembic Database Migrations
 -   Redis Caching
 -   Background Tasks with Celery
--   CI/CD Pipeline
 -   AWS Deployment
 
 ## Author
