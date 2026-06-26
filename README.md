@@ -1,5 +1,7 @@
 # Products and Orders API
 
+![CI](https://github.com/ferraridev01/fastapi-backend-api/actions/workflows/ci.yml/badge.svg)
+
 Professional REST API built with FastAPI, SQLAlchemy, and PostgreSQL,
 featuring JWT authentication, refresh tokens, role-based authorization,
 and a robust ordering system.
