@@ -10,8 +10,7 @@ from app.main import app as fastapi_app
 from app.models.order_model import Order
 from app.models.product_model import Product
 from app.models.user_model import User
-from app.services.auth_service import get_password_hash
-
+from app.core.security import get_password_hash
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test_db.db"
 
@@ -126,7 +125,7 @@ def admin_user(admin_password):
         email="admin@example.com",
         hashed_password=get_password_hash(admin_password),
         is_active=True,
-        is_admin=True,
+        role="admin",
     )
 
     db.add(user)

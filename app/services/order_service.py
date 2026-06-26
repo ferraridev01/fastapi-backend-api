@@ -40,9 +40,7 @@ async def update_order_status(
     db: Session, order_id: int, new_status: str, user_id: int
 ) -> Order:
     db_order = (
-        db.query(Order)
-        .filter(Order.id == order_id, Order.user_id == user_id)
-        .first()
+        db.query(Order).filter(Order.id == order_id, Order.user_id == user_id).first()
     )
 
     if not db_order:

@@ -97,4 +97,3 @@ def test_update_order_status_not_found(
     )
 
     assert response.status_code == 404
-    

@@ -9,4 +9,3 @@ class Product(Base):
     category = Column(String(50), index=True, nullable=False)
     name = Column(String(100), index=True, nullable=False)
     price = Column(Float, nullable=False)
-    

@@ -30,6 +30,7 @@ def create_user(db: Session, user_data: UserCreate) -> User:
         username=user_data.username,
         email=user_data.email,
         hashed_password=hashed_password,
+        role="user",
     )
 
     db.add(db_user)
@@ -60,7 +61,10 @@ def login_user(db: Session, login_data: OAuth2PasswordRequestForm) -> dict[str, 
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    token_data = {"sub": db_user.username}
+    token_data = {
+        "sub": db_user.username,
+        "role": db_user.role,
+    }
 
     access_token = create_access_token(data=token_data)
     refresh_token = create_refresh_token(data=token_data)
@@ -79,10 +83,14 @@ def refresh_access_token(db: Session, refresh_token: str) -> dict[str, str]:
     if not db_user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials"
+            detail="Could not validate credentials",
         )
 
-    token_data = {"sub": db_user.username}
+    token_data = {
+        "sub": db_user.username,
+        "role": db_user.role,
+    }
+
     access_token = create_access_token(data=token_data)
 
     return {
